@@ -16,7 +16,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['titulo'])) {
     $ano = $conn->real_escape_string($_POST['ano']);
     $sql = "INSERT INTO filmes (titulo, ano, assistido) VALUES ('$titulo', '$ano', FALSE)";
     $conn->query($sql);
-    header("Location: " . $_SERVER['PHP_SELF']); // Redireciona para evitar reenvio do formulário
+    header("Location: " . $_SERVER['PHP_SELF']);
     exit();
 }
 
@@ -52,7 +52,10 @@ $result = $conn->query($sql);
                     $class = $row["assistido"] ? 'assistido' : '';
                     echo "<div class='filme-item {$class}' data-id='{$row["id"]}'>";
                     echo "<span><strong>{$row["titulo"]}</strong> ({$row["ano"]})</span>";
+                    echo "<div class='acoes-filme'>";
                     echo "<button class='btn-assistido' data-assistido='{$row["assistido"]}'>" . ($row["assistido"] ? "Desmarcar" : "Assistido") . "</button>";
+                    echo "<button class='btn-remover' data-id='{$row["id"]}'>Remover</button>";
+                    echo "</div>";
                     echo "</div>";
                 }
             } else {
@@ -60,7 +63,7 @@ $result = $conn->query($sql);
             }
             $conn->close();
             ?>
-            </div>
+        </div>
     </div>
 
     <script src="script.js"></script>
