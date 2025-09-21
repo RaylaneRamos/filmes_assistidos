@@ -1,4 +1,10 @@
 <?php
+session_start();
+if (!isset($_SESSION['usuario'])) {
+    header("Location: login.php");
+    exit();
+}
+
 $servername = "localhost";
 $username = "root";
 $password = "";
@@ -35,7 +41,13 @@ $result = $conn->query($sql);
 </head>
 <body>
     <div class="container">
-        <h1>Meus Filmes Assistidos</h1>
+        <header>
+            <h1>Meus Filmes Assistidos</h1>
+            <div class="usuario-info">
+                <span>Olá, <?php echo htmlspecialchars($_SESSION['usuario']); ?>!</span>
+                <a href="logout.php" class="btn-logout">Sair</a>
+            </div>
+        </header>
         
         <form id="form-filme" action="" method="POST">
             <div class="input-group">
