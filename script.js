@@ -77,4 +77,44 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     });
+
+    document.getElementById('form-filme').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const form = e.target;
+        const lista = document.getElementById('lista-filmes');
+        const titulo = form.titulo.value;
+        const ano = form.ano.value;
+        const genero = form.genero.value;
+        const duracao = form.duracao.value;
+        const sinopse = form.sinopse.value;
+        const nota = form.nota.value;
+        const assistido = form.assistido.checked;
+        const favorito = form.favorito.checked;
+
+        let estrelas = '';
+        for (let i = 1; i <= 5; i++) {
+            estrelas += `<span class="estrela">${i <= nota ? '&#9733;' : '&#9734;'}</span>`;
+        }
+
+        let tags = '';
+        if (assistido) tags += '<span class="tag assistido">Assistido</span>';
+        if (favorito) tags += '<span class="tag favorito">Favorito</span>';
+
+        const card = document.createElement('article');
+        card.className = 'filme-card';
+        card.innerHTML = `
+            <div class="filme-info">
+                <h2 class="filme-titulo">${titulo}</h2>
+                <span class="filme-genero">${genero}</span>
+                <span class="filme-duracao">${duracao} min</span>
+                <p class="filme-sinopse">${sinopse}</p>
+                <div class="filme-avaliacao">${estrelas}</div>
+                <div class="filme-tags">${tags}</div>
+                <button class="btn-remover" title="Remover">&#10006;</button>
+            </div>
+        `;
+        card.querySelector('.btn-remover').onclick = () => card.remove();
+        lista.prepend(card);
+        form.reset();
+    });
 });

@@ -20,7 +20,14 @@ if ($conn->connect_error) {
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['titulo'])) {
     $titulo = $conn->real_escape_string($_POST['titulo']);
     $ano = $conn->real_escape_string($_POST['ano']);
-    $sql = "INSERT INTO filmes (titulo, ano, assistido) VALUES ('$titulo', '$ano', FALSE)";
+    $genero = $conn->real_escape_string($_POST['genero']);
+    $duracao = $conn->real_escape_string($_POST['duracao']);
+    $sinopse = $conn->real_escape_string($_POST['sinopse']);
+    $nota = $conn->real_escape_string($_POST['nota']);
+    $assistido = isset($_POST['assistido']) ? 1 : 0;
+    $favorito = isset($_POST['favorito']) ? 1 : 0;
+    
+    $sql = "INSERT INTO filmes (titulo, ano, genero, duracao, sinopse, nota, assistido, favorito) VALUES ('$titulo', '$ano', '$genero', '$duracao', '$sinopse', '$nota', '$assistido', '$favorito')";
     $conn->query($sql);
     header("Location: " . $_SERVER['PHP_SELF']);
     exit();
@@ -53,29 +60,55 @@ $result = $conn->query($sql);
             <div class="input-group">
                 <input type="text" name="titulo" id="titulo" placeholder="Título do Filme" required>
                 <input type="number" name="ano" id="ano" placeholder="Ano de Lançamento" min="1888" max="2100">
+                <input type="text" name="genero" id="genero" placeholder="Gênero" required>
+                <input type="number" name="duracao" id="duracao" placeholder="Duração (min)" min="1" required>
+                <input type="text" name="sinopse" id="sinopse" placeholder="Sinopse curta" required>
+                <select name="nota" id="nota" required>
+                    <option value="">Nota</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                </select>
+                <label><input type="checkbox" name="assistido" id="assistido"> Assistido</label>
+                <label><input type="checkbox" name="favorito" id="favorito"> Favorito</label>
                 <button type="submit">Adicionar Filme</button>
             </div>
         </form>
 
-        <div id="lista-filmes">
+        <section id="lista-filmes" class="filmes-grid">
             <?php
             if ($result->num_rows > 0) {
                 while($row = $result->fetch_assoc()) {
                     $class = $row["assistido"] ? 'assistido' : '';
-                    echo "<div class='filme-item {$class}' data-id='{$row["id"]}'>";
-                    echo "<span><strong>{$row["titulo"]}</strong> ({$row["ano"]})</span>";
-                    echo "<div class='acoes-filme'>";
-                    echo "<button class='btn-assistido' data-assistido='{$row["assistido"]}'>" . ($row["assistido"] ? "Desmarcar" : "Assistido") . "</button>";
-                    echo "<button class='btn-remover' data-id='{$row["id"]}'>Remover</button>";
+                    echo "<article class='filme-card {$class}' data-id='{$row["id"]}'>";
+                    echo "<div class='filme-info'>";
+                    echo "<h2 class='filme-titulo'>{$row["titulo"]}</h2>";
+                    echo "<span class='filme-genero'>Gênero</span>";
+                    echo "<span class='filme-duracao'>120 min</span>";
+                    echo "<p class='filme-sinopse'>Sinopse curta do filme para despertar interesse do usuário.</p>";
+                    echo "<div class='filme-avaliacao'>";
+                    echo "<span class='estrela'>&#9733;</span>";
+                    echo "<span class='estrela'>&#9733;</span>";
+                    echo "<span class='estrela'>&#9733;</span>";
+                    echo "<span class='estrela'>&#9733;</span>";
+                    echo "<span class='estrela'>&#9734;</span>";
                     echo "</div>";
+                    echo "<div class='filme-tags'>";
+                    echo "<span class='tag assistido'>Assistido</span>";
+                    echo "<span class='tag favorito'>Favorito</span>";
                     echo "</div>";
+                    echo "<button class='btn-remover' title='Remover' data-id='{$row["id"]}'>&#10006;</button>";
+                    echo "</div>";
+                    echo "</article>";
                 }
             } else {
                 echo "<p class='mensagem-vazia'>Nenhum filme cadastrado ainda.</p>";
             }
             $conn->close();
             ?>
-        </div>
+        </section>
     </div>
 
     <script src="script.js"></script>
