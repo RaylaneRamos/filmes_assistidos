@@ -1,6 +1,6 @@
 <?php
 session_start();
-if (!isset($_SESSION['usuario'])) {
+if (!isset($_SESSION['id_usuario'])) {
     header("Location: login.php");
     exit();
 }
@@ -51,7 +51,7 @@ $result = $conn->query($sql);
         <header>
             <h1>Meus Filmes Assistidos</h1>
             <div class="usuario-info">
-                <span>Olá, <?php echo htmlspecialchars($_SESSION['usuario']); ?>!</span>
+                <span>Olá, <?php echo htmlspecialchars($_SESSION['nome_usuario']); ?>!</span>
                 <a href="logout.php" class="btn-logout">Sair</a>
             </div>
         </header>

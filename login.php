@@ -14,7 +14,7 @@
         <section>
             <form class="form-login" method="POST" action="login.php">
                 <div class="input-group">
-                    <input type="text" name="usuario" placeholder="Usuário" required>
+                    <input type="email" name="email" placeholder="Email" required>
                 </div>
                 <div class="input-group">
                     <input type="password" name="senha" placeholder="Senha" required>
@@ -26,6 +26,8 @@
     </main>
 
     <?php
+    session_start();
+
     $servername = "localhost";
     $username = "root";
     $password = "";
@@ -38,28 +40,31 @@
     }
 
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        $usuario = $_POST['usuario'];
+        $email = $_POST['email'];
         $senha = $_POST['senha'];
 
-        $sql = "SELECT senha FROM usuarios WHERE usuario = ?";
+        // Buscar usuário pelo email
+        $sql = "SELECT id, nome, senha FROM usuarios WHERE email = ?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("s", $usuario);
+        $stmt->bind_param("s", $email);
         $stmt->execute();
-        $stmt->store_result();
+        $result = $stmt->get_result();
 
-        if ($stmt->num_rows > 0) {
-            $stmt->bind_result($senha_hash);
-            $stmt->fetch();
-            if (password_verify($senha, $senha_hash)) {
-                session_start();
-                $_SESSION['usuario'] = $usuario;
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+
+            if (password_verify($senha, $row['senha'])) {
+                // Login válido → guardar sessão
+                $_SESSION['id_usuario'] = $row['id'];
+                $_SESSION['nome_usuario'] = $row['nome'];
+
                 header("Location: index.php");
                 exit();
             } else {
-                echo "<p style='color:red;'>Senha incorreta.</p>";
+                echo "<p style='color:red; text-align:center;'>Senha incorreta.</p>";
             }
         } else {
-            echo "<p style='color:red;'>Usuário não encontrado.</p>";
+            echo "<p style='color:red; text-align:center;'>Usuário não encontrado.</p>";
         }
         $stmt->close();
     }
